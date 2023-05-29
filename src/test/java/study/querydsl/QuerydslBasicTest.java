@@ -28,7 +28,7 @@ public class QuerydslBasicTest {
 
 
     @BeforeEach
-    public void before(){
+    public void before() {
         queryFactory = new JPAQueryFactory(em);
         Team teamA = new Team("teamA");
         Team teamB = new Team("teamB");
@@ -45,11 +45,11 @@ public class QuerydslBasicTest {
     }
 
     @Test
-    public void startJPQL(){
+    public void startJPQL() {
         //member1을 찾아라
         String qlString =
                 "select m from Member m " +
-                "where m.username =:username";
+                        "where m.username =:username";
 
         Member findMember = em.createQuery(qlString, Member.class)
                 .setParameter("username", "member1")
@@ -59,7 +59,7 @@ public class QuerydslBasicTest {
     }
 
     @Test
-    public void startQuerydsl(){
+    public void startQuerydsl() {
 //        QMember m1 = new QMember("m1");
 
         Member findMember = queryFactory
@@ -72,7 +72,27 @@ public class QuerydslBasicTest {
     }
 
     @Test
-    public void search(){
+    public void search() {
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1")
+                        .and(member.age.between(10,30)))
+                .fetchOne();
+
+        assertThat(findMember.getUsername()).isEqualTo("member1");
 
     }
+
+    @Test
+    public void searchAndParam() {
+        Member findMember = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1")
+                        ,member.age.eq(10))
+                .fetchOne();
+
+        assertThat(findMember.getUsername()).isEqualTo("member1");
+
+    }
+
 }
