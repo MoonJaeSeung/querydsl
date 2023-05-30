@@ -10,32 +10,31 @@ import study.querydsl.entity.Member;
 import study.querydsl.entity.Team;
 
 import javax.persistence.EntityManager;
-
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional
-class MemberJpaRepositoryTest {
+class MemberRepositoryTest {
 
     @Autowired
     EntityManager em;
 
-    @Autowired MemberJpaRepository memberJpaRepository;
+    @Autowired MemberRepository memberRepository;
 
     @Test
     public void basicTest(){
         Member member = new Member("member1", 10);
-        memberJpaRepository.save(member);
+        memberRepository.save(member);
 
-        Member findMember = memberJpaRepository.findById(member.getId()).get();
+        Member findMember = memberRepository.findById(member.getId()).get();
         assertThat(findMember).isEqualTo(member);
 
-        List<Member> all = memberJpaRepository.findAll_Querydsl();
+        List<Member> all = memberRepository.findAll();
         assertThat(all).containsExactly(member);
 
-        List<Member> result2 = memberJpaRepository.findByUsername_Querydsl("member1");
+        List<Member> result2 = memberRepository.findByUsername("member1");
         assertThat(result2).containsExactly(member);
     }
 
@@ -62,8 +61,9 @@ class MemberJpaRepositoryTest {
         condition.setAgeLoe(45);
         condition.setTeamName("teamB");
 
-        List<MemberTeamDto> result = memberJpaRepository.search(condition);
+        List<MemberTeamDto> result = memberRepository.search(condition);
 
         assertThat(result).extracting("username").containsExactly("member4");
     }
+
 }
